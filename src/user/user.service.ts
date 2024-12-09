@@ -1,9 +1,11 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { isUUID } from 'class-validator';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class UserService {
@@ -27,20 +29,55 @@ export class UserService {
     }
   }
 
-  findAll() {
-    return `This action returns all user`;
+  findAll(paginationDto: PaginationDto) {
+
+    const { limit = 10, offset = 0 } = paginationDto;
+    
+    return this.userRepository.find({
+      skip: offset,
+      take: limit,
+    });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(id: string) {
+
+    // let user: User;
+
+    // if ( isUUID(term) ) {
+    const user = await this.userRepository.findOneBy({ id });
+
+    if ( !user ) 
+      throw new NotFoundException(`User with ${ id } not found`);
+    
+    return user;
+    // } else {
+    //   const queryBuilder = this.userRepository.createQueryBuilder(); 
+    //   user = await queryBuilder
+    //     .where('UPPER(title) =:title or slug =:slug', {
+    //       title: term.toUpperCase(),
+    //       slug: term.toLowerCase(),
+    //     }).getOne();
+    // }
+
+
+    // if ( !product ) 
+    //   throw new NotFoundException(`Product with ${ term } not found`);
+
+    // return product;
+
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  update(id: string, updateUserDto: UpdateUserDto) {
+
+    // const user = this.findOne(id);
+    // if ( !user ) 
+    //   throw new BadRequestException('User not found');
+    // return `This action updates a #${id} user`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const user = await this.findOne(id);
+    await this.userRepository.remove(user);
   }
 
   private handleDBExceptions(error: any) {

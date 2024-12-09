@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserModule } from './user/user.module';
 import { envs } from './config';
+import { CommonModule } from './common/common.module';
 
 
 @Module({
@@ -17,6 +18,7 @@ import { envs } from './config';
       synchronize: true,
     }),
     UserModule,
+    CommonModule,
   ],
 })
 export class AppModule {}
