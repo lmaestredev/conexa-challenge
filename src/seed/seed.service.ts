@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import axios, { AxiosInstance } from 'axios';
@@ -9,6 +9,7 @@ import { envs } from 'src/config';
 @Injectable()
 export class SeedService {
   private readonly axios: AxiosInstance = axios;
+  private readonly logger = new Logger('SeedController');
 
   constructor(
     @InjectRepository(Film)
@@ -16,6 +17,8 @@ export class SeedService {
   ) {}
 
   async executedSeed() {
+
+    this.logger.log('Rebuilding database');
     this.filmRepository.clear();
 
     const { data } = await this.axios.get<StarwarsResponse>(envs.apiStarWars);
@@ -25,7 +28,12 @@ export class SeedService {
     data.results.forEach(async (film) => {
       filmsToInsert.push(this.filmRepository.create(film));
     });
+    
     await this.filmRepository.insert(filmsToInsert);
-    return 'Seed executed successfully';
+    this.logger.log('Database rebuilt');
+    
+    return {
+      message: 'Seed executed successfully'
+    };
   }
 }
