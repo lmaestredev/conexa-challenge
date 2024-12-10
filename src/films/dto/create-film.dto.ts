@@ -1,4 +1,4 @@
-import { IsArray, IsDateString, IsOptional, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsDateString, IsInt, IsOptional, IsPositive, IsString, IsUUID } from 'class-validator';
 
 export class CreateFilmDto {
   
@@ -19,8 +19,9 @@ export class CreateFilmDto {
   @IsString()
   edited: string;
 
-  @IsString()
-  episode_id: string;
+  @IsInt()
+  @IsPositive()
+  episode_id: number;
 
   @IsString()
   opening_crawl: string;

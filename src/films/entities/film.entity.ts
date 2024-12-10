@@ -20,8 +20,8 @@ export class Film {
     @Column('text')
     edited: string;
 
-    @Column('text')
-    episode_id: string;
+    @Column('int')
+    episode_id: Number;
 
     @Column('text')
     opening_crawl: string;
