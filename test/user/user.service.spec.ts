@@ -39,7 +39,7 @@ describe('UserService', () => {
 
   it('Create a new user successfully', async () => {
     const createUserDto = { name: 'John Doe', username: 'john123', password: 'password' };
-    const user = { id: '1', ...createUserDto };
+    const user = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', ...createUserDto };
   
     mockRepository.create.mockReturnValue(user);
     mockRepository.save.mockResolvedValue(user);

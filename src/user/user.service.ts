@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
+import { CreateUserDto } from './dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { PaginationDto } from 'src/common/dtos';
 
 @Injectable()
 export class UserService {

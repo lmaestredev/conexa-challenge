@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, ParseIntPipe, ParseUUIDPipe, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe, Query } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { CreateUserDto } from './dto';
+import { PaginationDto } from '../common/dtos';
 
 @Controller('users')
 export class UserController {
