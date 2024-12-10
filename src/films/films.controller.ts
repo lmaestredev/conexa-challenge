@@ -2,7 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete, Query, ParseUUIDPipe
 import { FilmsService } from './films.service';
 import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
-import { PaginationDto } from 'src/common/dtos';
+import { PaginationDto } from '../common/dtos';
 
 @Controller('films')
 export class FilmsController {

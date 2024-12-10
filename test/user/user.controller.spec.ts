@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserController } from '../../src/user/user.controller';
 import { UserService } from '../../src/user/user.service';
 import { CreateUserDto } from '../../src/user/dto';
-import { PaginationDto } from 'src/common/dtos';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 
 

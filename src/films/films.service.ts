@@ -4,7 +4,7 @@ import { UpdateFilmDto } from './dto/update-film.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Film } from './entities/film.entity';
 import { Repository } from 'typeorm';
-import { PaginationDto } from 'src/common/dtos';
+import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { isUUID } from 'class-validator';
 
 @Injectable()
@@ -81,6 +81,7 @@ export class FilmsService {
   async remove(id: string) {
     const film = await this.findOne( id );
     await this.filmRepository.remove( film );
+    return `Film with id: ${ id } removed`;
   }
 
   private handleDBExceptions( error: any ) {
