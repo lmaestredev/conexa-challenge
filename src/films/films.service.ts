@@ -1,4 +1,10 @@
-import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { isUUID } from 'class-validator';
 import { Repository } from 'typeorm';
@@ -10,20 +16,17 @@ import { PaginationDto } from 'src/common/dtos/pagination.dto';
 
 @Injectable()
 export class FilmsService {
-
   private readonly logger = new Logger('FilmsService');
 
   constructor(
-
     @InjectRepository(Film)
     private readonly filmRepository: Repository<Film>,
-
   ) {}
 
   async create(createFilmDto: CreateFilmDto) {
     try {
       const film = this.filmRepository.create(createFilmDto);
-      await this.filmRepository.save( film );
+      await this.filmRepository.save(film);
       return film;
     } catch (err) {
       this.handleDBExceptions(err);
@@ -39,59 +42,53 @@ export class FilmsService {
   }
 
   async findOne(term: string) {
-
     let film: Film | null;
 
-    if ( isUUID(term) ) {
+    if (isUUID(term)) {
       film = await this.filmRepository.findOneBy({ id: term });
-      
     } else {
-      const queryBuilder = this.filmRepository.createQueryBuilder('film'); 
+      const queryBuilder = this.filmRepository.createQueryBuilder('film');
       film = await queryBuilder
         .where(
-          'UPPER(title) LIKE :term OR UPPER(producer) LIKE :term OR UPPER(director) LIKE :term', 
-          { term: `%${term.toUpperCase()}%` }
+          'UPPER(title) LIKE :term OR UPPER(producer) LIKE :term OR UPPER(director) LIKE :term',
+          { term: `%${term.toUpperCase()}%` },
         )
         .getOne();
     }
 
-    if ( !film ) 
-      throw new NotFoundException(`Film with ${ term } not found`);
+    if (!film) throw new NotFoundException(`Film with ${term} not found`);
 
     return film;
   }
 
   async update(id: string, updateFilmDto: UpdateFilmDto) {
-    
     const film = await this.filmRepository.preload({
       id: id,
-      ...updateFilmDto
+      ...updateFilmDto,
     });
 
-    if ( !film ) throw new NotFoundException(`Product with id: ${ id } not found`);
+    if (!film) throw new NotFoundException(`Product with id: ${id} not found`);
 
     try {
-      await this.filmRepository.save( film );
+      await this.filmRepository.save(film);
       return film;
-      
     } catch (error) {
       this.handleDBExceptions(error);
     }
   }
 
   async remove(id: string) {
-    const film = await this.findOne( id );
-    await this.filmRepository.remove( film );
-    return `Film with id: ${ id } removed`;
+    const film = await this.findOne(id);
+    await this.filmRepository.remove(film);
+    return `Film with id: ${id} removed`;
   }
 
-  private handleDBExceptions( error: any ) {
+  private handleDBExceptions(error: any) {
+    if (error.code === '23505') throw new BadRequestException(error.detail);
 
-    if ( error.code === '23505' )
-      throw new BadRequestException(error.detail);
-    
-    this.logger.error(error)
-    throw new InternalServerErrorException('Unexpected error, check server logs');
-
+    this.logger.error(error);
+    throw new InternalServerErrorException(
+      'Unexpected error, check server logs',
+    );
   }
 }

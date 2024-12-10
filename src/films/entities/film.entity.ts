@@ -1,61 +1,59 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm"
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity({name: 'films'})
+@Entity({ name: 'films' })
 export class Film {
-    
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
-    
-    @Column('text', {
-        array: true
-    })
-    characters: string[];
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column('date')
-    created: string;
+  @Column('text', {
+    array: true,
+  })
+  characters: string[];
 
-    @Column('text')
-    director: string;
+  @Column('date')
+  created: string;
 
-    @Column('text')
-    edited: string;
+  @Column('text')
+  director: string;
 
-    @Column('int')
-    episode_id: Number;
+  @Column('text')
+  edited: string;
 
-    @Column('text')
-    opening_crawl: string;
-    
-    @Column('text', {
-        array: true
-    })
-    planets: string[];
+  @Column('int')
+  episode_id: number;
 
-    @Column('text')
-    producer: string;
+  @Column('text')
+  opening_crawl: string;
 
-    @Column('date')
-    release_date: string;
-    
-    @Column('text', {
-        array: true
-    })
-    species: string[];
-    
-    @Column('text', {
-        array: true
-    })
-    starships: string[];
+  @Column('text', {
+    array: true,
+  })
+  planets: string[];
 
-    @Column('text')
-    title: string;
+  @Column('text')
+  producer: string;
 
-    @Column('text') 
-    url: string;
+  @Column('date')
+  release_date: string;
 
-    @Column('text', {
-        array: true 
-    })
-    vehicles: string[];
-    
+  @Column('text', {
+    array: true,
+  })
+  species: string[];
+
+  @Column('text', {
+    array: true,
+  })
+  starships: string[];
+
+  @Column('text')
+  title: string;
+
+  @Column('text')
+  url: string;
+
+  @Column('text', {
+    array: true,
+  })
+  vehicles: string[];
 }

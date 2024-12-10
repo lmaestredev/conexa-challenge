@@ -1,11 +1,14 @@
-import { Controller, Get, Post, Body, Param, Delete, ParseUUIDPipe, Query, UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+} from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { PaginationDto } from '../common/dtos';
 import { GetUser } from './decorators/get-user.decorator';
 import { User } from './entities/user.entity';
-import { RoleProtected } from './decorators/role-protected.decorator';
 import { ValidRoles } from './interfaces';
 import { Auth } from './decorators';
 
@@ -25,26 +28,11 @@ export class AuthController {
 
   @Get('private')
   @Auth(ValidRoles.admin)
-  findAll(
-    @GetUser() user: User,
-    @GetUser('username') username: string
-  ) {
-    
+  findAll(@GetUser() user: User, @GetUser('username') username: string) {
     return {
       ok: true,
       user,
-      username
+      username,
     };
-    // return this.authService.findAll(paginationDto);
   }
-
-  // @Get(':id')
-  // findOne(@Param('id', ParseUUIDPipe) id: string) {
-  //   return this.authService.findOne(id);
-  // }
-
-  // @Delete(':id')
-  // remove(@Param('id', ParseUUIDPipe) id: string) {
-  //   return this.authService.remove(id);
-  // }
 }

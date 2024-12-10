@@ -1,21 +1,17 @@
-
 import { Test, TestingModule } from '@nestjs/testing';
 import { AuthController } from '../../src/auth/auth.controller';
 import { AuthService } from '../../src/auth/auth.service';
 import { CreateUserDto, LoginUserDto } from '../../src/auth/dto';
-import { PaginationDto } from '../../src/common/dtos';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 
-
-
 const mockUserService = {
-    create: jest.fn(),
-    findAll: jest.fn(),
-    findOne: jest.fn(),
-    remove: jest.fn(),
-    login: jest.fn(),
-    handleDBExceptions: jest.fn(),
+  create: jest.fn(),
+  findAll: jest.fn(),
+  findOne: jest.fn(),
+  remove: jest.fn(),
+  login: jest.fn(),
+  handleDBExceptions: jest.fn(),
 };
 
 describe('AuthController', () => {
@@ -44,8 +40,14 @@ describe('AuthController', () => {
       username: 'johndoe',
       password: 'Password@123',
     };
-    
-    const result = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', ...createUserDto, token: 'mockJwtToken', isActive: true, roles: ['user'] };
+
+    const result = {
+      id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+      ...createUserDto,
+      token: 'mockJwtToken',
+      isActive: true,
+      roles: ['regular'],
+    };
 
     jest.spyOn(service, 'create').mockResolvedValue(result);
 
@@ -58,8 +60,15 @@ describe('AuthController', () => {
       username: 'johndoe',
       password: 'Password@123',
     };
-    
-    const result = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', fullName: 'John Doe', username: 'johndoe', token: 'mockJwtToken', isActive: true, roles: ['user'] };
+
+    const result = {
+      id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+      fullName: 'John Doe',
+      username: 'johndoe',
+      token: 'mockJwtToken',
+      isActive: true,
+      roles: ['regular'],
+    };
 
     jest.spyOn(service, 'login').mockResolvedValue(result);
 
@@ -75,9 +84,8 @@ describe('AuthController', () => {
 
     jest.spyOn(service, 'login').mockRejectedValue(new UnauthorizedException());
 
-    await expect(controller.login(loginUserDto)).rejects.toThrow(UnauthorizedException);
+    await expect(controller.login(loginUserDto)).rejects.toThrow(
+      UnauthorizedException,
+    );
   });
-    
 });
-
-

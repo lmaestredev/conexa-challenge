@@ -16,8 +16,8 @@ import { JwtStrategy } from './strategies/jwt.strategy';
 
     JwtModule.register({
       secret: envs.jwtSecret,
-      signOptions: { expiresIn: '2h' }
-    })
+      signOptions: { expiresIn: '2h' },
+    }),
   ],
   controllers: [AuthController],
   providers: [AuthService, JwtStrategy],
@@ -25,7 +25,7 @@ import { JwtStrategy } from './strategies/jwt.strategy';
     TypeOrmModule.forFeature([User]),
     PassportModule,
     JwtStrategy,
-    JwtModule
-  ]
+    JwtModule,
+  ],
 })
 export class AuthModule {}

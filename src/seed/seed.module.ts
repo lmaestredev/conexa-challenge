@@ -6,8 +6,6 @@ import { FilmsModule } from 'src/films/films.module';
 @Module({
   controllers: [SeedController],
   providers: [SeedService],
-  imports: [
-    FilmsModule
-  ],
+  imports: [FilmsModule],
 })
 export class SeedModule {}

@@ -6,7 +6,6 @@ import { CommonModule } from './common/common.module';
 import { FilmsModule } from './films/films.module';
 import { SeedModule } from './seed/seed.module';
 
-
 @Module({
   imports: [
     TypeOrmModule.forRoot({

@@ -2,7 +2,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
-import { BadRequestException, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 import { User } from '../../src/auth/entities/user.entity';
 import { AuthService } from '../../src/auth/auth.service';
@@ -49,9 +54,18 @@ describe('AuthService', () => {
   });
 
   it('Create a new user successfully', async () => {
-    const createUserDto = { fullName: 'John Doe', username: 'john123', password: 'password' };
-    const hashedPassword = '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6';
-    const user = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', ...createUserDto, password: hashedPassword };
+    const createUserDto = {
+      fullName: 'John Doe',
+      username: 'john123',
+      password: 'password',
+    };
+    const hashedPassword =
+      '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6';
+    const user = {
+      id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+      ...createUserDto,
+      password: hashedPassword,
+    };
 
     jest.spyOn(bcrypt, 'hashSync').mockReturnValue(hashedPassword);
     mockRepository.create.mockReturnValue(user);
@@ -74,34 +88,48 @@ describe('AuthService', () => {
   });
 
   it('Handle exceptions', async () => {
-    const createUserDto = { fullName: 'John Doe', username: 'johndoe', password: 'Password@123' };
+    const createUserDto = {
+      fullName: 'John Doe',
+      username: 'johndoe',
+      password: 'Password@123',
+    };
     const error = { code: '23505', detail: 'Duplicate entry' };
-  
+
     jest.spyOn(repository, 'create').mockImplementation(() => {
       throw error;
     });
-  
-    jest.spyOn(service as any, 'handleDBExceptions').mockImplementation((err: any) => {
-      if (err.code === '23505') {
-        throw new BadRequestException(err.detail);
-      }
-      throw new InternalServerErrorException('Unexpected error occurred, check the logs for details');
-    });
-  
-    await expect(service.create(createUserDto)).rejects.toThrow(BadRequestException);
+
+    jest
+      .spyOn(service as any, 'handleDBExceptions')
+      .mockImplementation((err: any) => {
+        if (err.code === '23505') {
+          throw new BadRequestException(err.detail);
+        }
+        throw new InternalServerErrorException(
+          'Unexpected error occurred, check the logs for details',
+        );
+      });
+
+    await expect(service.create(createUserDto)).rejects.toThrow(
+      BadRequestException,
+    );
     expect(service['handleDBExceptions']).toHaveBeenCalledWith(error);
   });
 
   it('Login a user successfully', async () => {
     const loginUserDto = { username: 'john123', password: 'password' };
-    const hashedPassword = '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6';
-    const user = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', username: 'john123', password: hashedPassword };
+    const hashedPassword =
+      '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6';
+    const user = {
+      id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+      username: 'john123',
+      password: hashedPassword,
+    };
 
     jest.spyOn(bcrypt, 'compareSync').mockReturnValue(true);
     mockRepository.findOne.mockResolvedValue(user);
 
     const result = await service.login(loginUserDto);
-
 
     expect(mockRepository.findOne).toHaveBeenCalledWith({
       where: { username: 'john123' },
@@ -111,7 +139,7 @@ describe('AuthService', () => {
       id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
       username: 'john123',
       token: 'mockJwtToken',
-      password: hashedPassword
+      password: hashedPassword,
     });
   });
 
@@ -120,72 +148,130 @@ describe('AuthService', () => {
 
     mockRepository.findOne.mockResolvedValue(null);
 
-    await expect(service.login(loginUserDto)).rejects.toThrow(UnauthorizedException);
+    await expect(service.login(loginUserDto)).rejects.toThrow(
+      UnauthorizedException,
+    );
   });
 
   it('should throw UnauthorizedException if password is invalid', async () => {
     const loginUserDto = { username: 'john123', password: 'password' };
-    const hashedPassword = '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6';
-    const user = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', username: 'john123', password: hashedPassword };
+    const hashedPassword =
+      '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6';
+    const user = {
+      id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+      username: 'john123',
+      password: hashedPassword,
+    };
 
     jest.spyOn(bcrypt, 'compareSync').mockReturnValue(false);
     mockRepository.findOne.mockResolvedValue(user);
 
-    await expect(service.login(loginUserDto)).rejects.toThrow(UnauthorizedException);
+    await expect(service.login(loginUserDto)).rejects.toThrow(
+      UnauthorizedException,
+    );
   });
 
   it('Get all users', async () => {
     const mockUsers = [
-      { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', fullName: 'John Doe', username: 'johndoe', password: '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6', isActive: true, roles: ['user'], checkFieldsBeforeInsert: jest.fn(), checkFieldsBeforeUpdate: jest.fn() },
-      { id: 'f215d109-b864-44d7-8009-ff0f899b5590', fullName: 'Jane Doe', username: 'janedoe', password: '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6', isActive: true, roles: ['user'], checkFieldsBeforeInsert: jest.fn(), checkFieldsBeforeUpdate: jest.fn() },
+      {
+        id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+        fullName: 'John Doe',
+        username: 'johndoe',
+        password:
+          '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6',
+        isActive: true,
+        roles: ['user'],
+        checkFieldsBeforeInsert: jest.fn(),
+        checkFieldsBeforeUpdate: jest.fn(),
+      },
+      {
+        id: 'f215d109-b864-44d7-8009-ff0f899b5590',
+        fullName: 'Jane Doe',
+        username: 'janedoe',
+        password:
+          '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6',
+        isActive: true,
+        roles: ['user'],
+        checkFieldsBeforeInsert: jest.fn(),
+        checkFieldsBeforeUpdate: jest.fn(),
+      },
     ];
-  
+
     jest.spyOn(repository, 'find').mockResolvedValue(mockUsers);
-  
+
     const paginationDto = { limit: 2, offset: 0 };
     const result = await service.findAll(paginationDto);
-  
+
     expect(repository.find).toHaveBeenCalledWith({ skip: 0, take: 2 });
     expect(result).toEqual(mockUsers);
   });
 
   it('Get user by ID', async () => {
-    const mockUser = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', fullName: 'John Doe', username: 'johndoe', password: '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6', isActive: true, roles: ['user'], checkFieldsBeforeInsert: jest.fn(), checkFieldsBeforeUpdate: jest.fn() };
-  
+    const mockUser = {
+      id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+      fullName: 'John Doe',
+      username: 'johndoe',
+      password: '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6',
+      isActive: true,
+      roles: ['user'],
+      checkFieldsBeforeInsert: jest.fn(),
+      checkFieldsBeforeUpdate: jest.fn(),
+    };
+
     jest.spyOn(repository, 'findOneBy').mockResolvedValue(mockUser);
-  
-    const result = await service.findOne('85ab41bf-322f-42bf-8f7d-7b63ee092917');
-  
-    expect(repository.findOneBy).toHaveBeenCalledWith({ id: '85ab41bf-322f-42bf-8f7d-7b63ee092917' });
+
+    const result = await service.findOne(
+      '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+    );
+
+    expect(repository.findOneBy).toHaveBeenCalledWith({
+      id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+    });
     expect(result).toEqual(mockUser);
   });
-  
+
   it('Throw NotFoundException if user is not found', async () => {
     jest.spyOn(repository, 'findOneBy').mockResolvedValue(null);
-  
-    await expect(service.findOne('f215d109-b864-44d7-8009-ff0f899b5590')).rejects.toThrow(NotFoundException);
-    expect(repository.findOneBy).toHaveBeenCalledWith({ id: 'f215d109-b864-44d7-8009-ff0f899b5590' });
+
+    await expect(
+      service.findOne('f215d109-b864-44d7-8009-ff0f899b5590'),
+    ).rejects.toThrow(NotFoundException);
+    expect(repository.findOneBy).toHaveBeenCalledWith({
+      id: 'f215d109-b864-44d7-8009-ff0f899b5590',
+    });
   });
-  
+
   it('Remove a user by ID', async () => {
-    const mockUser = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', fullName: 'John Doe', username: 'johndoe', password: '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6', isActive: true, roles: ['user'], checkFieldsBeforeInsert: jest.fn(), checkFieldsBeforeUpdate: jest.fn() };
-  
+    const mockUser = {
+      id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+      fullName: 'John Doe',
+      username: 'johndoe',
+      password: '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6',
+      isActive: true,
+      roles: ['user'],
+      checkFieldsBeforeInsert: jest.fn(),
+      checkFieldsBeforeUpdate: jest.fn(),
+    };
+
     jest.spyOn(service, 'findOne').mockResolvedValue(mockUser);
     jest.spyOn(repository, 'remove').mockResolvedValue(mockUser as any);
-  
+
     await service.remove('85ab41bf-322f-42bf-8f7d-7b63ee092917');
-  
-    expect(service.findOne).toHaveBeenCalledWith('85ab41bf-322f-42bf-8f7d-7b63ee092917');
+
+    expect(service.findOne).toHaveBeenCalledWith(
+      '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+    );
     expect(repository.remove).toHaveBeenCalledWith(mockUser);
   });
-  
-  
-  
+
   it('Throw NotFoundException if user to remove is not found', async () => {
     jest.spyOn(service, 'findOne').mockRejectedValue(new NotFoundException());
-  
-    await expect(service.remove('f215d109-b864-44d7-8009-ff0f899b5590')).rejects.toThrow(NotFoundException);
-    expect(service.findOne).toHaveBeenCalledWith('f215d109-b864-44d7-8009-ff0f899b5590');
+
+    await expect(
+      service.remove('f215d109-b864-44d7-8009-ff0f899b5590'),
+    ).rejects.toThrow(NotFoundException);
+    expect(service.findOne).toHaveBeenCalledWith(
+      'f215d109-b864-44d7-8009-ff0f899b5590',
+    );
   });
-  
 });
