@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 import axios, { AxiosInstance } from 'axios';
 import { StarwarsResponse } from './interfaces/starwars-response.interface';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Film } from 'src/films/entities/film.entity';
-import { Repository } from 'typeorm';
 import { envs } from 'src/config';
 
 

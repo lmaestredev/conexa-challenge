@@ -1,9 +1,11 @@
 
 import { Test, TestingModule } from '@nestjs/testing';
-import { UserController } from '../../src/user/user.controller';
-import { UserService } from '../../src/user/user.service';
-import { CreateUserDto } from '../../src/user/dto';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { AuthController } from '../../src/auth/auth.controller';
+import { AuthService } from '../../src/auth/auth.service';
+import { CreateUserDto, LoginUserDto } from '../../src/auth/dto';
+import { PaginationDto } from '../../src/common/dtos';
+import { UnauthorizedException } from '@nestjs/common';
+import { PassportModule } from '@nestjs/passport';
 
 
 
@@ -12,75 +14,70 @@ const mockUserService = {
     findAll: jest.fn(),
     findOne: jest.fn(),
     remove: jest.fn(),
+    login: jest.fn(),
+    handleDBExceptions: jest.fn(),
 };
 
-describe('UserController', () => {
-  let controller: UserController;
-  let service: UserService;
+describe('AuthController', () => {
+  let controller: AuthController;
+  let service: AuthService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      controllers: [UserController],
+      imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
+      controllers: [AuthController],
       providers: [
         {
-          provide: UserService,
+          provide: AuthService,
           useValue: mockUserService,
         },
       ],
     }).compile();
 
-    controller = module.get<UserController>(UserController);
-    service = module.get<UserService>(UserService);
+    controller = module.get<AuthController>(AuthController);
+    service = module.get<AuthService>(AuthService);
   });
 
   it('Create a new user', async () => {
     const createUserDto: CreateUserDto = {
-      name: 'John Doe',
+      fullName: 'John Doe',
       username: 'johndoe',
       password: 'Password@123',
     };
-    const result = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', ...createUserDto };
-  
+    
+    const result = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', ...createUserDto, token: 'mockJwtToken', isActive: true, roles: ['user'] };
+
     jest.spyOn(service, 'create').mockResolvedValue(result);
-  
+
     expect(await controller.create(createUserDto)).toBe(result);
     expect(service.create).toHaveBeenCalledWith(createUserDto);
   });
-  
-  it('Get all users with pagination', async () => {
-    const paginationDto: PaginationDto = { limit: 10, offset: 0 };
-    const result = [
-      { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', name: 'John Doe', username: 'johndoe', email: 'john.doe@example.com', password: 'Password@123' },
-    ];
-  
-    jest.spyOn(service, 'findAll').mockResolvedValue(result);
-  
-    expect(await controller.findAll(paginationDto)).toBe(result);
-    expect(service.findAll).toHaveBeenCalledWith(paginationDto);
+
+  it('Login a user successfully', async () => {
+    const loginUserDto: LoginUserDto = {
+      username: 'johndoe',
+      password: 'Password@123',
+    };
+    
+    const result = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', fullName: 'John Doe', username: 'johndoe', token: 'mockJwtToken', isActive: true, roles: ['user'] };
+
+    jest.spyOn(service, 'login').mockResolvedValue(result);
+
+    expect(await controller.login(loginUserDto)).toBe(result);
+    expect(service.login).toHaveBeenCalledWith(loginUserDto);
   });
 
-  it('Get user by ID', async () => {
-    const userId = '85ab41bf-322f-42bf-8f7d-7b63ee092917';
-    const result = { id: '85ab41bf-322f-42bf-8f7d-7b63ee092917', name: 'John Doe', username: 'johndoe', email: 'john.doe@example.com', password: 'Password@123' };
-  
-    jest.spyOn(service, 'findOne').mockResolvedValue(result);
-  
-    expect(await controller.findOne(userId)).toBe(result);
-    expect(service.findOne).toHaveBeenCalledWith(userId);
-  });
+  it('should throw UnauthorizedException if login fails', async () => {
+    const loginUserDto: LoginUserDto = {
+      username: 'johndoe',
+      password: 'wrongpassword',
+    };
 
-  it('Remove a user by ID', async () => {
-    const userId = '85ab41bf-322f-42bf-8f7d-7b63ee092917';
-    const result = undefined;
-  
-    jest.spyOn(service, 'remove').mockResolvedValue(result);
-  
-    expect(await controller.remove(userId)).toBe(result);
-    expect(service.remove).toHaveBeenCalledWith(userId);
+    jest.spyOn(service, 'login').mockRejectedValue(new UnauthorizedException());
+
+    await expect(controller.login(loginUserDto)).rejects.toThrow(UnauthorizedException);
   });
-  
-  
-  
+    
 });
 
 

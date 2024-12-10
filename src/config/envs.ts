@@ -10,6 +10,7 @@ interface EnvVars {
     DB_PORT: number;
     DB_USERNAME: string;
     API_STARWARS: string;
+    JWT_SECRET: string;
 }
 
 const envSchema = joi.object({
@@ -19,6 +20,7 @@ const envSchema = joi.object({
     DB_HOST: joi.string().required(),
     DB_PORT: joi.number().required(),
     DB_USERNAME: joi.string().required(),
+    JWT_SECRET: joi.string().required(),
 })
 .unknown(true);
 
@@ -42,4 +44,5 @@ export const envs = {
     dbPort: envVars.DB_PORT,
     dbUsername: envVars.DB_USERNAME,
     apiStarWars: envVars.API_STARWARS,
+    jwtSecret: envVars.JWT_SECRET
 };

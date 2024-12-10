@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserModule } from './user/user.module';
+import { AuthModule } from './auth/auth.module';
 import { envs } from './config';
 import { CommonModule } from './common/common.module';
 import { FilmsModule } from './films/films.module';
@@ -19,7 +19,7 @@ import { SeedModule } from './seed/seed.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    UserModule,
+    AuthModule,
     CommonModule,
     FilmsModule,
     SeedModule,

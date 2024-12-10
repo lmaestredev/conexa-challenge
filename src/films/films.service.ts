@@ -1,11 +1,12 @@
 import { BadRequestException, Injectable, InternalServerErrorException, Logger, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { isUUID } from 'class-validator';
+import { Repository } from 'typeorm';
+
 import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Film } from './entities/film.entity';
-import { Repository } from 'typeorm';
 import { PaginationDto } from 'src/common/dtos/pagination.dto';
-import { isUUID } from 'class-validator';
 
 @Injectable()
 export class FilmsService {
