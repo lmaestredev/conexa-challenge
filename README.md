@@ -24,6 +24,10 @@ docker-compose up -d
 ```
 npm run start:dev
 ```
+7. Reconstruir la base de datos para las peliculas
+```
+http://localhost:3000/api/v1/seed
+```
 
 # Ejecutar los test
 ```

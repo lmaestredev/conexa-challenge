@@ -10,5 +10,8 @@ import { TypeOrmModule } from '@nestjs/typeorm';
   ],
   controllers: [FilmsController],
   providers: [FilmsService],
+  exports: [
+    TypeOrmModule.forFeature([Film])
+  ]
 })
 export class FilmsModule {}

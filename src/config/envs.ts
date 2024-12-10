@@ -9,6 +9,7 @@ interface EnvVars {
     DB_HOST: string;
     DB_PORT: number;
     DB_USERNAME: string;
+    API_STARWARS: string;
 }
 
 const envSchema = joi.object({
@@ -40,4 +41,5 @@ export const envs = {
     dbHost: envVars.DB_HOST,
     dbPort: envVars.DB_PORT,
     dbUsername: envVars.DB_USERNAME,
+    apiStarWars: envVars.API_STARWARS,
 };

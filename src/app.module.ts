@@ -4,6 +4,7 @@ import { UserModule } from './user/user.module';
 import { envs } from './config';
 import { CommonModule } from './common/common.module';
 import { FilmsModule } from './films/films.module';
+import { SeedModule } from './seed/seed.module';
 
 
 @Module({
@@ -21,6 +22,7 @@ import { FilmsModule } from './films/films.module';
     UserModule,
     CommonModule,
     FilmsModule,
+    SeedModule,
   ],
 })
 export class AppModule {}
