@@ -3,6 +3,11 @@ import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { PaginationDto } from '../common/dtos';
+import { GetUser } from './decorators/get-user.decorator';
+import { User } from './entities/user.entity';
+import { RoleProtected } from './decorators/role-protected.decorator';
+import { ValidRoles } from './interfaces';
+import { Auth } from './decorators';
 
 @Controller('users')
 export class AuthController {
@@ -19,9 +24,17 @@ export class AuthController {
   }
 
   @Get('private')
-  @UseGuards(AuthGuard())
-  findAll() {
-    return 'private';
+  @Auth(ValidRoles.admin)
+  findAll(
+    @GetUser() user: User,
+    @GetUser('username') username: string
+  ) {
+    
+    return {
+      ok: true,
+      user,
+      username
+    };
     // return this.authService.findAll(paginationDto);
   }
 
