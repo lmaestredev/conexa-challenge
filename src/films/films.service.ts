@@ -82,7 +82,9 @@ export class FilmsService {
   async remove(id: string) {
     const film = await this.findOne(id);
     await this.filmRepository.remove(film);
-    return `Film with id: ${id} removed`;
+    return {
+      message: `Film with id: ${id} removed`
+    };
   }
 
   private handleDBExceptions(error: any) {

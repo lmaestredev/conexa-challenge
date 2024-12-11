@@ -3,14 +3,16 @@ import {
   Get,
   Post,
   Body,
+  Query,
+  Param,
+  Delete,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { PaginationDto } from '../common/dtos';
-import { GetUser } from './decorators/get-user.decorator';
-import { User } from './entities/user.entity';
+import { Auth, GetUser } from './decorators';
 import { ValidRoles } from './interfaces';
-import { Auth } from './decorators';
+import { User } from './entities/user.entity';
 
 @Controller('users')
 export class AuthController {
@@ -26,13 +28,24 @@ export class AuthController {
     return this.authService.login(loginUserDto);
   }
 
-  @Get('private')
+  @Get()
   @Auth(ValidRoles.admin)
-  findAll(@GetUser() user: User, @GetUser('username') username: string) {
-    return {
-      ok: true,
-      user,
-      username,
-    };
+  findAll( @Query() paginationDto: PaginationDto ) {
+    return this.authService.findAll(paginationDto);
+  }
+
+  @Get(':id')
+  @Auth(ValidRoles.admin)
+  findOne(@Param('id') term: string) {
+    return this.authService.findOne(term);
+  }
+
+  @Delete(':id')
+  @Auth(ValidRoles.admin)
+  remove(
+    @Param('id') id: string,
+    @GetUser() user: User
+  ) {
+    return this.authService.remove(id, user);
   }
 }

@@ -15,9 +15,6 @@ export class SeedService {
   constructor(
     @InjectRepository(Film)
     private readonly filmRepository: Repository<Film>,
-
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>
   ) { }
 
   async runSeed(user: User) {
@@ -32,13 +29,11 @@ export class SeedService {
 
   private async deleteTables() {
     await this.filmRepository.clear();
-    await this.userRepository.clear();
   }
 
   async insertFilms(user: User) {
 
     this.logger.log('Rebuilding database');
-    this.filmRepository.clear();
 
     const { data } = await this.axios.get<StarwarsResponse>(envs.apiStarWars);
 

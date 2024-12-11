@@ -96,7 +96,7 @@ describe('FilmsController', () => {
 
   it('Remove a film by ID', async () => {
     const userId = '85ab41bf-322f-42bf-8f7d-7b63ee092917';
-    const result = 'Film removed';
+    const result = { message: 'Film removed'};
 
     jest.spyOn(service, 'remove').mockResolvedValue(result);
 

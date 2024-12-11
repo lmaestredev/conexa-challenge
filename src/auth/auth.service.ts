@@ -4,20 +4,22 @@ import {
   InternalServerErrorException,
   Logger,
   NotFoundException,
+  OnModuleInit,
   UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { JwtService } from '@nestjs/jwt';
-import { Repository } from 'typeorm';
+import { Admin, Repository } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 
 import { User } from './entities/user.entity';
 import { CreateUserDto, LoginUserDto } from './dto';
-import { PaginationDto } from 'src/common/dtos';
-import { JwtPayload } from './interfaces/jwt-payload';
+import { PaginationDto } from '../common/dtos';
+import { JwtPayload} from './interfaces';
+import { initialData } from './data/create-auth-data';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit{
   private readonly logger = new Logger('AuthService');
 
   constructor(
@@ -26,6 +28,20 @@ export class AuthService {
 
     private readonly jwtService: JwtService,
   ) {}
+
+  async onModuleInit() {
+    const userSeed = initialData.user;
+
+    const adminUser = await this.userRepository.findOne({ where: { username: userSeed.username  } });
+
+    if (!adminUser) {
+      const user = this.userRepository.create(userSeed);
+      await this.userRepository.save(user);
+      this.logger.log('Admin user created');
+    } else {
+      this.logger.log('Admin user already exists');
+    }
+  }
 
   async create(createUserDto: CreateUserDto) {
     try {
@@ -52,7 +68,8 @@ export class AuthService {
   }
 
   async login(loginUserDto: LoginUserDto) {
-    this.logger.log(`Logging user with: ${JSON.stringify(loginUserDto)}`);
+
+    this.logger.log(`Logging user with: ${loginUserDto.username}`);
 
     const { username, password } = loginUserDto;
 
@@ -68,7 +85,7 @@ export class AuthService {
 
     if (!user.password || !bcrypt.compareSync(password, user.password))
       throw new UnauthorizedException('Invalid credentials');
-
+    
     return {
       ...user,
       token: this.getJwtToken({ id: user.id }),
@@ -92,9 +109,15 @@ export class AuthService {
     return user;
   }
 
-  async remove(id: string) {
-    const user = await this.findOne(id);
-    await this.userRepository.remove(user);
+  async remove(id: string, user: User) {
+    const userToDelete = await this.findOne(id);
+    if (userToDelete.id === user.id) {
+      throw new BadRequestException('You cannot delete yourself');
+    }
+    await this.userRepository.remove(userToDelete);
+    return {
+      message: `User with id ${id} deleted`,
+    }
   }
 
   private handleDBExceptions(error: any): never {

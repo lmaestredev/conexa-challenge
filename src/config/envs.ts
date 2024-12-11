@@ -11,6 +11,7 @@ interface EnvVars {
   DB_USERNAME: string;
   API_STARWARS: string;
   JWT_SECRET: string;
+  USER_ADMIN_PASSWORD: string;
 }
 
 const envSchema = joi
@@ -46,4 +47,5 @@ export const envs = {
   dbUsername: envVars.DB_USERNAME,
   apiStarWars: envVars.API_STARWARS,
   jwtSecret: envVars.JWT_SECRET,
+  adminUserPw: envVars.USER_ADMIN_PASSWORD, 
 };

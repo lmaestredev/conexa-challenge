@@ -36,6 +36,19 @@ const mockUser = {
   toJSON: jest.fn(),
 };
 
+const mockUserToDelete = {
+  id: '85ab41bf-322f-42bf-8f7d-7b63ee092919',
+  fullName: 'John Doe2',
+  username: 'johndoe2',
+  password: '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6',
+  isActive: true,
+  roles: ['user'],
+  film: {} as Film,
+  checkFieldsBeforeInsert: jest.fn(),
+  checkFieldsBeforeUpdate: jest.fn(),
+  toJSON: jest.fn(),
+};
+
 const mockJwtService = {
   sign: jest.fn().mockReturnValue('mockJwtToken'),
 };
@@ -251,22 +264,22 @@ describe('AuthService', () => {
 
   it('Remove a user by ID', async () => {
 
-    jest.spyOn(service, 'findOne').mockResolvedValue(mockUser);
-    jest.spyOn(repository, 'remove').mockResolvedValue(mockUser as any);
+    jest.spyOn(service, 'findOne').mockResolvedValue(mockUserToDelete);
+    jest.spyOn(repository, 'remove').mockResolvedValue(mockUserToDelete as any);
 
-    await service.remove('85ab41bf-322f-42bf-8f7d-7b63ee092917');
+    await service.remove('85ab41bf-322f-42bf-8f7d-7b63ee092919', mockUser);
 
     expect(service.findOne).toHaveBeenCalledWith(
-      '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+      '85ab41bf-322f-42bf-8f7d-7b63ee092919',
     );
-    expect(repository.remove).toHaveBeenCalledWith(mockUser);
+    expect(repository.remove).toHaveBeenCalledWith(mockUserToDelete);
   });
 
   it('Throw NotFoundException if user to remove is not found', async () => {
     jest.spyOn(service, 'findOne').mockRejectedValue(new NotFoundException());
 
     await expect(
-      service.remove('f215d109-b864-44d7-8009-ff0f899b5590'),
+      service.remove('f215d109-b864-44d7-8009-ff0f899b5590', mockUser),
     ).rejects.toThrow(NotFoundException);
     expect(service.findOne).toHaveBeenCalledWith(
       'f215d109-b864-44d7-8009-ff0f899b5590',
