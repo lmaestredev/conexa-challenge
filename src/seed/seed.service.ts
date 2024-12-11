@@ -10,7 +10,7 @@ import { User } from '../auth/entities/user.entity';
 @Injectable()
 export class SeedService {
   private readonly axios: AxiosInstance = axios;
-  private readonly logger = new Logger('SeedController');
+  private readonly logger = new Logger('SeedService');
 
   constructor(
     @InjectRepository(Film)
@@ -18,8 +18,10 @@ export class SeedService {
   ) { }
 
   async runSeed(user: User) {
-    await this.deleteTables();
 
+    this.logger.log('Running seed');
+
+    await this.deleteTables();
     await this.insertFilms(user);
 
     return {

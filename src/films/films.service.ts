@@ -26,8 +26,10 @@ export class FilmsService {
 
   async create(createFilmDto: CreateFilmDto, user: User) {
     try {
+      this.logger.log(`Creating film for user: ${user.id}`);
       const film = this.filmRepository.create({...createFilmDto, user});
       await this.filmRepository.save(film);
+      this.logger.log(`Film ${film.id} created`); 
       return film;
     } catch (err) {
       this.handleDBExceptions(err);
@@ -35,6 +37,7 @@ export class FilmsService {
   }
 
   findAll(paginationDto: PaginationDto) {
+    this.logger.log('Retrieving all films');
     const { limit = 10, offset = 0 } = paginationDto;
     return this.filmRepository.find({
       skip: offset,
@@ -43,6 +46,9 @@ export class FilmsService {
   }
 
   async findOne(term: string) {
+    
+    this.logger.log(`Retrieving film with term: ${term}`);
+
     let film: Film | null;
 
     if (isUUID(term)) {
@@ -63,6 +69,9 @@ export class FilmsService {
   }
 
   async update(id: string, updateFilmDto: UpdateFilmDto, user: User) {
+    
+    this.logger.log(`Updating film with id: ${id}`);
+
     const film = await this.filmRepository.preload({
       id: id,
       ...updateFilmDto,
@@ -80,6 +89,8 @@ export class FilmsService {
   }
 
   async remove(id: string) {
+    
+    this.logger.log(`Removing film with id: ${id}`);
     const film = await this.findOne(id);
     await this.filmRepository.remove(film);
     return {

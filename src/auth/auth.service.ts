@@ -55,9 +55,10 @@ export class AuthService implements OnModuleInit{
       });
 
       await this.userRepository.save(user);
+      
       delete user.password;
-
       this.logger.log(`User created with: ${JSON.stringify(user)}`);
+
       return {
         ...user,
         token: this.getJwtToken({ id: user.id }),
@@ -93,6 +94,9 @@ export class AuthService implements OnModuleInit{
   }
 
   findAll(paginationDto: PaginationDto) {
+
+    this.logger.log('Retrieving all users');
+
     const { limit = 10, offset = 0 } = paginationDto;
 
     return this.userRepository.find({
@@ -102,6 +106,9 @@ export class AuthService implements OnModuleInit{
   }
 
   async findOne(id: string) {
+
+    this.logger.log(`Retrieving user with id: ${id}`);
+
     const user = await this.userRepository.findOneBy({ id });
 
     if (!user) throw new NotFoundException(`User with ${id} not found`);
@@ -110,6 +117,9 @@ export class AuthService implements OnModuleInit{
   }
 
   async remove(id: string, user: User) {
+
+    this.logger.log(`Deleting user with id: ${id}`);
+    
     const userToDelete = await this.findOne(id);
     if (userToDelete.id === user.id) {
       throw new BadRequestException('You cannot delete yourself');
