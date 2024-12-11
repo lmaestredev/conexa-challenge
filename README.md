@@ -24,11 +24,7 @@ docker-compose up -d
 ```
 npm run start:dev
 ```
-7. Login con usuario admin
-username: admin123
-password: adminPassword123
-
-8. Reconstruir la base de datos para las peliculas
+7. Reconstruir la base de datos para las peliculas
 ```
 http://localhost:3000/api/v1/seed
 ```
