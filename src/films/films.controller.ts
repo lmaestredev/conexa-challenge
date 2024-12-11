@@ -9,7 +9,7 @@ import {
   Query,
   ParseUUIDPipe,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { FilmsService } from './films.service';
 import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
@@ -20,6 +20,7 @@ import { User } from '../auth/entities/user.entity';
 import { Film } from './entities/film.entity';
 
 @ApiTags('films')
+@ApiBearerAuth()
 @Controller('films')
 export class FilmsController {
   constructor(private readonly filmsService: FilmsService) {}

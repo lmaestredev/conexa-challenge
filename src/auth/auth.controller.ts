@@ -7,7 +7,7 @@ import {
   Param,
   Delete,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { CreateUserDto, LoginUserDto } from './dto';
 import { PaginationDto } from '../common/dtos';
@@ -16,6 +16,7 @@ import { ValidRoles } from './interfaces';
 import { User } from './entities/user.entity';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('users')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}

@@ -9,6 +9,13 @@ import { SeedModule } from './seed/seed.module';
 @Module({
   imports: [
     TypeOrmModule.forRoot({
+
+      ssl: envs.stage === 'prod',
+      extra: {
+        ssl: envs.stage === 'prod'
+          ? { rejectUnauthorized: false }
+          : null
+      },
       type: 'postgres',
       host: envs.dbHost,
       port: envs.dbPort,

@@ -3,13 +3,14 @@ import {
   Get,
   Logger,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SeedService } from './seed.service';
 import { Auth, GetUser } from '../auth/decorators';
 import { ValidRoles } from '../auth/interfaces';
 import { User } from '../auth/entities/user.entity';
 
 @ApiTags('seed')
+@ApiBearerAuth()
 @Controller('seed')
 export class SeedController {
   
