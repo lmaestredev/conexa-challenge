@@ -53,6 +53,7 @@ La documentación de los endpoints está disponible en formato Swagger. Accede a
 ```
 http://localhost:3000/api#/
 ```
+⚠️ TAMBIEN ⚠️ Dentro del directorio ```/data``` ubicado en la raiz principal del proyecto tenes 3 colecciones con los endpoints de la aplicación para importarlos en insomnia o postman
 
 ---
 
