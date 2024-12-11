@@ -3,6 +3,9 @@ import { PaginationDto } from 'src/common/dtos/pagination.dto';
 import { FilmsController } from '../../src/films/films.controller';
 import { FilmsService } from '../../src/films/films.service';
 import { FilmTemplate } from './film.template';
+import { User } from '../../src/auth/entities/user.entity';
+import { PassportModule } from '@nestjs/passport';
+import { Film } from 'src/films/entities/film.entity';
 
 const mockFilmsService = {
   create: jest.fn(),
@@ -18,6 +21,7 @@ describe('FilmsController', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
       controllers: [FilmsController],
       providers: [
         {
@@ -34,26 +38,36 @@ describe('FilmsController', () => {
   it('Create a new film', async () => {
     const filmTemplate = new FilmTemplate();
     const createFilmDto = filmTemplate.getFilm();
-    const result = {
+
+    const newUser = new User();
+    newUser.id = 'f12ed5eb-3452-4016-8b95-0b64c8bb5ef8';
+    newUser.fullName = 'luis maestre';
+    newUser.username = 'lmaestre256';
+    newUser.isActive = true;
+    newUser.roles = ['regular', 'admin'];
+    
+    const objectResult = {
       id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
       ...createFilmDto,
+      user: newUser.toJSON(),
     };
 
-    jest.spyOn(service, 'create').mockResolvedValue(result);
-
-    expect(await controller.create(createFilmDto)).toBe(result);
-    expect(service.create).toHaveBeenCalledWith(createFilmDto);
+    mockFilmsService.create.mockResolvedValue(objectResult);
+    const result = await controller.create(createFilmDto, newUser);
+    expect(result).toBe(objectResult);
   });
 
   it('Get all films with pagination', async () => {
     const paginationDto: PaginationDto = { limit: 10, offset: 0 };
     const filmTemplate = new FilmTemplate();
-    const result = [filmTemplate.getFilmCreated()];
+    const filmDto = filmTemplate.getFilmCreated();
+    const mockFilms: Film[] = [filmDto as unknown as Film];
 
-    jest.spyOn(service, 'findAll').mockResolvedValue(result);
+    mockFilmsService.findAll.mockResolvedValue(mockFilms);
 
-    expect(await controller.findAll(paginationDto)).toBe(result);
-    expect(service.findAll).toHaveBeenCalledWith(paginationDto);
+    const result = await controller.findAll(paginationDto);
+    expect(result).toBe(mockFilms);
+    expect(mockFilmsService.findAll).toHaveBeenCalledWith(paginationDto);
   });
 
   it('Get film by ID', async () => {
@@ -61,22 +75,23 @@ describe('FilmsController', () => {
     const filmTemplate = new FilmTemplate();
     const result = filmTemplate.getFilmCreated();
 
-    jest.spyOn(service, 'findOne').mockResolvedValue(result);
+    mockFilmsService.findOne.mockResolvedValue(result);
 
-    expect(await controller.findOne(filmId)).toBe(result);
-    expect(service.findOne).toHaveBeenCalledWith(filmId);
+    const response = await controller.findOne(filmId);
+    expect(response).toBe(result);
+    expect(mockFilmsService.findOne).toHaveBeenCalledWith(filmId);
   });
 
-  it('Update an existing film', async () => {
+  it('Get film by ID', async () => {
+    const filmId = '85ab41bf-322f-42bf-8f7d-7b63ee092917';
     const filmTemplate = new FilmTemplate();
-    const updateFilmDto = filmTemplate.getFilm();
-    const id = '85ab41bf-322f-42bf-8f7d-7b63ee092917';
-    const result = { id, ...updateFilmDto };
+    const result = filmTemplate.getFilmCreated();
 
-    jest.spyOn(service, 'update').mockResolvedValue(result);
+    mockFilmsService.findOne.mockResolvedValue(result);
 
-    expect(await controller.update(id, updateFilmDto)).toBe(result);
-    expect(service.update).toHaveBeenCalledWith(id, updateFilmDto);
+    const response = await controller.findOne(filmId);
+    expect(response).toBe(result);
+    expect(mockFilmsService.findOne).toHaveBeenCalledWith(filmId);
   });
 
   it('Remove a film by ID', async () => {

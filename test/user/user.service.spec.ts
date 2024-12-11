@@ -12,6 +12,7 @@ import {
 import { User } from '../../src/auth/entities/user.entity';
 import { AuthService } from '../../src/auth/auth.service';
 import { Repository } from 'typeorm';
+import { Film } from '../../src/films/entities/film.entity';
 
 const mockRepository = {
   create: jest.fn(),
@@ -20,6 +21,19 @@ const mockRepository = {
   findOneBy: jest.fn(),
   remove: jest.fn(),
   findOne: jest.fn(),
+};
+
+const mockUser = {
+  id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
+  fullName: 'John Doe',
+  username: 'johndoe',
+  password: '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6',
+  isActive: true,
+  roles: ['user'],
+  film: {} as Film,
+  checkFieldsBeforeInsert: jest.fn(),
+  checkFieldsBeforeUpdate: jest.fn(),
+  toJSON: jest.fn(),
 };
 
 const mockJwtService = {
@@ -181,8 +195,10 @@ describe('AuthService', () => {
           '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6',
         isActive: true,
         roles: ['user'],
+        film: {} as Film,
         checkFieldsBeforeInsert: jest.fn(),
         checkFieldsBeforeUpdate: jest.fn(),
+        toJSON: jest.fn(),
       },
       {
         id: 'f215d109-b864-44d7-8009-ff0f899b5590',
@@ -192,8 +208,10 @@ describe('AuthService', () => {
           '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6',
         isActive: true,
         roles: ['user'],
+        film: {} as Film,
         checkFieldsBeforeInsert: jest.fn(),
         checkFieldsBeforeUpdate: jest.fn(),
+        toJSON: jest.fn(),
       },
     ];
 
@@ -207,16 +225,6 @@ describe('AuthService', () => {
   });
 
   it('Get user by ID', async () => {
-    const mockUser = {
-      id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
-      fullName: 'John Doe',
-      username: 'johndoe',
-      password: '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6',
-      isActive: true,
-      roles: ['user'],
-      checkFieldsBeforeInsert: jest.fn(),
-      checkFieldsBeforeUpdate: jest.fn(),
-    };
 
     jest.spyOn(repository, 'findOneBy').mockResolvedValue(mockUser);
 
@@ -242,16 +250,6 @@ describe('AuthService', () => {
   });
 
   it('Remove a user by ID', async () => {
-    const mockUser = {
-      id: '85ab41bf-322f-42bf-8f7d-7b63ee092917',
-      fullName: 'John Doe',
-      username: 'johndoe',
-      password: '$2b$10$JjwHs584TYbUqZcKWIiPxuq2EOpIieWl4X/bmlm7get4Xqr.e7mw6',
-      isActive: true,
-      roles: ['user'],
-      checkFieldsBeforeInsert: jest.fn(),
-      checkFieldsBeforeUpdate: jest.fn(),
-    };
 
     jest.spyOn(service, 'findOne').mockResolvedValue(mockUser);
     jest.spyOn(repository, 'remove').mockResolvedValue(mockUser as any);

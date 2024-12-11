@@ -1,8 +1,10 @@
+import { Film } from '../../films/entities/film.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -35,6 +37,12 @@ export class User {
   })
   roles: string[];
 
+  @OneToMany(
+    () => Film,
+    (film) => film.user,
+  )
+  film: Film;
+
   @BeforeInsert()
   checkFieldsBeforeInsert() {
     this.username = this.username.toLowerCase();
@@ -43,5 +51,15 @@ export class User {
   @BeforeUpdate()
   checkFieldsBeforeUpdate() {
     this.checkFieldsBeforeInsert();
+  }
+
+  toJSON() {
+    return {
+      id: this.id,
+      fullName: this.fullName,
+      username: this.username,
+      isActive: this.isActive,
+      roles: this.roles,
+    };
   }
 }

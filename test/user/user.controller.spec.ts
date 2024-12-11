@@ -4,6 +4,7 @@ import { AuthService } from '../../src/auth/auth.service';
 import { CreateUserDto, LoginUserDto } from '../../src/auth/dto';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
+import { Film } from '../../src/films/entities/film.entity';
 
 const mockUserService = {
   create: jest.fn(),
@@ -47,6 +48,7 @@ describe('AuthController', () => {
       token: 'mockJwtToken',
       isActive: true,
       roles: ['regular'],
+      film: {} as Film,
     };
 
     jest.spyOn(service, 'create').mockResolvedValue(result);
@@ -68,6 +70,7 @@ describe('AuthController', () => {
       token: 'mockJwtToken',
       isActive: true,
       roles: ['regular'],
+      film: {} as Film,
     };
 
     jest.spyOn(service, 'login').mockResolvedValue(result);

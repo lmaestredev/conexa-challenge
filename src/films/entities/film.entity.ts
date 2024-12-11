@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { User } from '../../auth/entities/user.entity';
+import { Column, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity({ name: 'films' })
 export class Film {
@@ -56,4 +57,11 @@ export class Film {
     array: true,
   })
   vehicles: string[];
+
+  @ManyToOne(
+    () => User, 
+    ( user ) => user.film,
+    { eager: true }
+  )
+  user: User;
 }

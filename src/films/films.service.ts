@@ -12,7 +12,8 @@ import { Repository } from 'typeorm';
 import { CreateFilmDto } from './dto/create-film.dto';
 import { UpdateFilmDto } from './dto/update-film.dto';
 import { Film } from './entities/film.entity';
-import { PaginationDto } from 'src/common/dtos/pagination.dto';
+import { PaginationDto } from '../common/dtos/pagination.dto';
+import { User } from '../auth/entities/user.entity';
 
 @Injectable()
 export class FilmsService {
@@ -23,9 +24,9 @@ export class FilmsService {
     private readonly filmRepository: Repository<Film>,
   ) {}
 
-  async create(createFilmDto: CreateFilmDto) {
+  async create(createFilmDto: CreateFilmDto, user: User) {
     try {
-      const film = this.filmRepository.create(createFilmDto);
+      const film = this.filmRepository.create({...createFilmDto, user});
       await this.filmRepository.save(film);
       return film;
     } catch (err) {
@@ -61,7 +62,7 @@ export class FilmsService {
     return film;
   }
 
-  async update(id: string, updateFilmDto: UpdateFilmDto) {
+  async update(id: string, updateFilmDto: UpdateFilmDto, user: User) {
     const film = await this.filmRepository.preload({
       id: id,
       ...updateFilmDto,
@@ -70,6 +71,7 @@ export class FilmsService {
     if (!film) throw new NotFoundException(`Product with id: ${id} not found`);
 
     try {
+      film.user = user;
       await this.filmRepository.save(film);
       return film;
     } catch (error) {

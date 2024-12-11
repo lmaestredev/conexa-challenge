@@ -4,8 +4,9 @@ import {
   Logger,
 } from '@nestjs/common';
 import { SeedService } from './seed.service';
-import { Auth } from 'src/auth/decorators';
-import { ValidRoles } from 'src/auth/interfaces';
+import { Auth, GetUser } from '../auth/decorators';
+import { ValidRoles } from '../auth/interfaces';
+import { User } from '../auth/entities/user.entity';
 
 @Controller('seed')
 export class SeedController {
@@ -17,8 +18,10 @@ export class SeedController {
 
   @Get()
   @Auth(ValidRoles.admin)
-  executedSeed() {
+  executedSeed(
+    @GetUser() user: User
+  ) {
     this.logger.log('Executing seed');
-    return this.seedService.executedSeed();
+    return this.seedService.runSeed(user);
   }
 }
