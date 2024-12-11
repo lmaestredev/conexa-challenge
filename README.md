@@ -29,6 +29,11 @@ npm run start:dev
 http://localhost:3000/api/v1/seed
 ```
 
+# Documentacion de endpoints
+```
+http://localhost:3000/api#/
+```
+
 # Ejecutar los test
 ```
 npm run test
